@@ -28,4 +28,5 @@ while 1:
     print "received ", textin, "from client"
     if textin == "hello":
         print "fuuuuuuuuck"
+        conn.sendall("got it!")
 conn.close()
