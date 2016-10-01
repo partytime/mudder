@@ -20,15 +20,12 @@ conn, addr = s.accept()
 print "connected", addr
 
 while 1:
-    data = conn.recv(1024)
+    #take only latin strings, cuz italy
+    data = conn.recv(1024).decode("latin1")
     if not data: break
-    textin = str(data)
-    print type(textin)
+    #we need to strip to remove whatever magic comes from telnet
+    textin = str(data).strip()
     print "received ", textin, "from client"
-    print "data is ", data
     if textin == "hello":
         print "fuuuuuuuuck"
-    if textin == "kill":
-        print "hit kill", textin
-        conn.close()
 conn.close()
