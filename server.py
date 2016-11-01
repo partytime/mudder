@@ -30,3 +30,15 @@ while 1:
         print "fuuuuuuuuck"
         conn.sendall("got it!")
 conn.close()
+
+#data structure for rooms
+rooms = {
+    "Cave": {
+        "description": "The cave is damp and cold. There's an exit in the distance",
+        "exits": { "outside": "Outside" },
+    },
+    "Outside": {
+        "description": "You're outside the cave in a field. You're warm.",
+        "exits": { "inside": "Cave" },
+    }
+}
