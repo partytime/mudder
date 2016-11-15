@@ -8,16 +8,12 @@ import time
 
 # create a socket to listen for new connections
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
 # let socket be immidately reused
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
 # bind socket to port
 s.bind(("", 50007))
-
 # set socket to non blocking; this is weird on BSDs(osx)
 # s.setblocking(False)
-
 # listen!
 s.listen(1)
 
@@ -41,27 +37,26 @@ class run_server(threading.Thread):
         lock.acquire()
         clients.append(self)
         lock.release()
-        self.user = ""
+        n = g.Navigation()
+        p = g.Player()
         self.conn.send("Login: ")
         self.data = self.conn.recv(1024).decode("latin1")
         self.textin = str(self.data).strip()
-        if self.textin in u.users:
-            user = self.textin
-            self.conn.send("***************************************\n")
-            self.conn.send("WELCOME " + self.textin.upper() + "\n")
-            if u.users[user]['wizard']:
-                self.conn.send("It's a pleasure to see a managing wizard around.\n")
-            self.conn.send("***************************************\n")
-            self.conn.send("Enjoy the trip, my dear friend.\n")
-            self.conn.send("(If you are lost, type 'help' for a command list)\n")
-            self.conn.send("***************************************\n")
-            lock.acquire()
-            usersOnline.append(user)
-            lock.release()
-        else:
-            self.conn.send("Your name doesn't seem to be on our list. :( \n")
-            self.conn.send("Run the game again, or contact the wizard to add you to this magic world.\n")
-            self.conn.close()
+        user = self.textin
+        if not p.checkUserExists(user):
+            self.conn.send("Your name doesn't seem to be on our list. Creating new user!\n")
+            p.addUser(user, "A new user with no description")
+        self.conn.send("***************************************\n")
+        self.conn.send("WELCOME " + self.textin.upper() + "\n")
+        if u.users[user]['wizard']:
+            self.conn.send("It's a pleasure to see a managing wizard around.\n")
+        self.conn.send("***************************************\n")
+        self.conn.send("Enjoy the trip, my dear friend.\n")
+        self.conn.send("(If you are lost, type 'help' for a command list)\n")
+        self.conn.send("***************************************\n")
+        lock.acquire()
+        usersOnline.append(user)
+        lock.release()
 
         while 1:
             # take only latin strings, cuz italy
@@ -76,8 +71,6 @@ class run_server(threading.Thread):
             self.textin = str(self.data).strip()
             print "received ", self.textin, "from client"
 
-            n = g.Navigation()
-            p = g.Player()
             # Navigation commands
             if self.textin == "east" or self.textin == "e" and n.getCurLoc(user)['exits']:
                 if "east" in n.getCurLoc(user)['exits']:
