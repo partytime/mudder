@@ -6,6 +6,20 @@ class Player(object):
     def __init__(self):
         pass
 
+    def checkUserExists(self, user):
+        return user in users.users
+
+    def addUser(self, user, description):
+        u = { user: {
+                    "description": description,
+                    "location": "EmptyRoom",
+                    "inventory": [],
+                    "wizard": False
+                    }
+                }
+        users.users.update(u)
+
+
     def readDesc(self, user):
         return users.users[user]['description']
 
@@ -43,3 +57,9 @@ class Navigation(object):
 
     def readItems(self, user):
         return rooms.rooms[self.getCurLoc()]['items']
+
+class dataManipulation(object):
+    def __init__(self):
+        pass
+
+

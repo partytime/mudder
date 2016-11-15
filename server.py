@@ -24,6 +24,7 @@ s.listen(1)
 gq = Queue.Queue()
 lock = threading.Lock()
 clients = []
+usersOnline = []
 
 class run_server(threading.Thread):
     def __init__ (self, conn, gq):
@@ -54,6 +55,9 @@ class run_server(threading.Thread):
             self.conn.send("Enjoy the trip, my dear friend.\n")
             self.conn.send("(If you are lost, type 'help' for a command list)\n")
             self.conn.send("***************************************\n")
+            lock.acquire()
+            usersOnline.append(user)
+            lock.release()
         else:
             self.conn.send("Your name doesn't seem to be on our list. :( \n")
             self.conn.send("Run the game again, or contact the wizard to add you to this magic world.\n")
@@ -148,7 +152,9 @@ class run_server(threading.Thread):
 
             if self.textin == "who":
                 # TODO - print out all the active users logged in
-                pass
+                self.conn.send("==Users Online ==\n")
+                for user in usersOnline:
+                    self.conn.send(user + "\n")
 
             if self.textin == "help":
                 self.conn.send("HELP - GAME OPTIONS \n")
